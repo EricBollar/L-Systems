@@ -135,6 +135,15 @@
 		var radius = 100;
 		var center = new THREE.Vector3(0, 0, 0);
 		function mouseMove(event) {
+
+			// auto rotate 
+			/*
+			angleXZ += step;
+			camera.position.x = Math.sin(angleXZ) * radius;
+			camera.position.z = Math.cos(angleXZ) * -radius;
+			camera.lookAt(center);
+			render(); */
+
 			if (isMouseDown) {
 				var x = event.clientX;
 				var y = event.clientY;
@@ -144,14 +153,6 @@
 					camera.position.x = Math.sin(angleXZ) * radius;
 					camera.position.z = Math.cos(angleXZ) * -radius;
 				}
-
-				/*
-				if (y - prevY !== 0) {
-					angleYZ -= step * (y - prevY);
-					//camera.position.z = Math.cos(angleYZ) * radius;
-					camera.position.y = -Math.sin(angleYZ) * radius;
-				}*/
-				//console.log(temp * (180 / Math.PI));
 
 				camera.lookAt(center);
 				render();
