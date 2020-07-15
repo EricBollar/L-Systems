@@ -33,26 +33,30 @@
 		<div class="dropdown-menu dropdown-menu-center">
 			<p>|| 3D Diagrams</p>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="bush(2)">Bush</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="flower(1.15)">Flower</a> <!--
+			<a class="dropdown-item" href="javascript:void(0)" onclick="flower(1.15)">Flower</a>
+			<!--
 			<a class="dropdown-item" href="javascript:void(0)" onclick="complexOne(2)">Complex Tree 1</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="complexTwo(1.5)">Complex Tree 2</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="complexThree(0.1)">Complex Tree 3</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="complexFour(1)">Complex Tree 4</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="complexFive(0.01)">Complex Tree 5</a> --> 
+			<a class="dropdown-item" href="javascript:void(0)" onclick="complexFive(0.01)">Complex Tree 5</a> -->
 			<div class="dropdown-divider"></div>
 			<p>|| 2D Diagrams</p>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="interpreterOne(1)">Quadratic Koch Island</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="interpreterTwo(1)">Quadratic Snowflake Curve</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="interpreterThree(1)">Islands & Lakes Combo</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingOne(1.25)">Bracketed Edge-Rewriting 1</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingThree(0.8)">Bracketed Edge-Rewriting 2</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingOne(1.25)">Bracketed Edge-Rewriting
+				1</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingThree(0.8)">Bracketed Edge-Rewriting
+				2</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingTwo(1)">Bracketed Node-Rewriting 1</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingFour(0.3)">Bracketed Node-Rewriting 2</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingFour(0.3)">Bracketed Node-Rewriting
+				2</a>
 		</div>
 	</div>
 
 	<div style="position: absolute; top: 2%; left: 25px;">
-		<div id = "card" class="card" style="background-color: #2b2b2b; position: relative; width: 400px;">
+		<div id="card" class="card" style="background-color: #2b2b2b; position: relative; width: 400px;">
 			<button id="showhidebutton" type="button" class="btn btn-primary"
 				style="position: absolute; top: 15px; left: 70%;" href="javascript:void(0)" onclick="hideshow()">Hide
 				Info</button>
@@ -61,12 +65,15 @@
 				<h6>Eric Bollar 7/15/20</h6>
 				<div id="info">
 					<p> My Website: <a href="http://www.ericbollar.com">http://www.ericbollar.com</a><br>
-						Github: <a href="http://github.com/EricBollar/L-Systems">http://github.com/EricBollar/L-Systems</a><br>
-						More info: <a href="http://algorithmicbotany.org/papers/abop/abop.pdf">http://algorithmicbotany.org/papers/abop/abop.pdf</a>
+						Github: <a
+							href="http://github.com/EricBollar/L-Systems">http://github.com/EricBollar/L-Systems</a><br>
+						More info: <a
+							href="http://algorithmicbotany.org/papers/abop/abop.pdf">http://algorithmicbotany.org/papers/abop/abop.pdf</a>
 					</p>
 					<h6 style='text-align: center;'>Controls</h6>
 					<p>Use the red 'Select Tree' button to cycle through different examples. Click and
-						hold down the mouse button to rotate the shown example around the Y-axis. Use the blue 'Show/Hide Info' button
+						hold down the mouse button to rotate the shown example around the Y-axis. Use the blue
+						'Show/Hide Info' button
 						to toggle the info box's visibility.
 					</p>
 					<h6 id="treename" style='text-align: center;'>Current Tree Loading</h6>
@@ -372,13 +379,16 @@
 				} else if (string[i] === "}") {
 					inleaf = false;
 					leafPoints.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
-					if (greeInd >= greens.length - 1) {
-						greeInd = 0;
+					if (leafC === green) {
+						if (greeInd >= greens.length - 1) {
+							greeInd = 0;
+						} else {
+							greeInd++;
+						}
+						var material = new THREE.LineBasicMaterial({ color: greens[greeInd], side: THREE.DoubleSide });
 					} else {
-						greeInd++;
+						var material = new THREE.LineBasicMaterial({ color: leafC, side: THREE.DoubleSide });
 					}
-					console.log(greeInd);
-					var material = new THREE.LineBasicMaterial({ color: greens[greeInd], side: THREE.DoubleSide });
 					var geometry = new THREE.PlaneBufferGeometry().setFromPoints(leafPoints);
 					var line = new THREE.Mesh(geometry, material);
 					scene.add(line);
@@ -710,7 +720,7 @@
 					if (previous[i] === "A") {
 						next += "F(50)[&(" + a + ")F(50)A]/(" + d1 + ")[&(" + a + ")F(50)A]/(" + d2 + ")[&(" + a + ")F(50)A]";
 					} else if (previous[i] === "F") {
-						var curr = i+2;
+						var curr = i + 2;
 						var num = "";
 						while (previous[curr] !== ")") {
 							num += previous[curr];
@@ -748,7 +758,7 @@
 					if (previous[i] === "A") {
 						next += "F(50)[&(" + a + ")F(50)A]/(" + d1 + ")[&(" + a + ")F(50)A]/(" + d2 + ")[&(" + a + ")F(50)A]";
 					} else if (previous[i] === "F") {
-						var curr = i+2;
+						var curr = i + 2;
 						var num = "";
 						while (previous[curr] !== ")") {
 							num += previous[curr];
@@ -786,7 +796,7 @@
 					if (previous[i] === "A") {
 						next += "!F(50)[&(" + a + ")F(50)A]/(" + d1 + ")[&(" + a + ")F(50)A]/(" + d2 + ")[&(" + a + ")F(50)A]";
 					} else if (previous[i] === "F") {
-						var curr = i+2;
+						var curr = i + 2;
 						var num = "";
 						while (previous[curr] !== ")") {
 							num += previous[curr];
@@ -824,7 +834,7 @@
 					if (previous[i] === "A") {
 						next += "!F(50)[&(" + a + ")F(50)A]/(" + d1 + ")[&(" + a + ")F(50)A]/(" + d2 + ")[&(" + a + ")F(50)A]";
 					} else if (previous[i] === "F") {
-						var curr = i+2;
+						var curr = i + 2;
 						var num = "";
 						while (previous[curr] !== ")") {
 							num += previous[curr];
@@ -858,7 +868,7 @@
 				next = "";
 				for (i = 0; i < previous.length; i++) {
 					if (previous[i] === "A") {
-						var curr = i+2;
+						var curr = i + 2;
 						var num = "";
 						while (previous[curr] !== ")") {
 							num += previous[curr];
@@ -868,7 +878,7 @@
 						l = parseFloat(num);
 						next += "F(" + l + ")[&(" + a1 + ")B(" + (l * r1) + ")]/(180)[&(" + a2 + ")B(" + (l * r2) + ")]";
 					} else if (previous[i] === "B") {
-						var curr = i+2;
+						var curr = i + 2;
 						var num = "";
 						while (previous[curr] !== ")") {
 							num += previous[curr];
