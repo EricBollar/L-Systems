@@ -546,15 +546,15 @@
 
 		function treeNine(step) {
 			clear();
-			start = "F";
-			n = 3;
-			angle = 22.5;
+			start = "!F/A";
+			n = 10;
+			angle = 20;
 			previous = start;
 			while (n > 0) {
 				next = "";
 				for (i = 0; i < previous.length; i++) {
-					if (previous[i] === "F") {
-						next += "F[-&/F][/++&F]||F[--&*F][+&F]";
+					if (previous[i] === "A") {
+						next += "!F[&FA]/[&FA]/[&FA]";
 					} else {
 						next += previous[i];
 					}
