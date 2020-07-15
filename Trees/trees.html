@@ -31,15 +31,6 @@
 			Select Tree
 		</button>
 		<div class="dropdown-menu dropdown-menu-center">
-			<p>|| 2D Diagrams</p>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="interpreterOne(1)">Interpreter 1</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="interpreterTwo(1)">Interpreter 2</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="interpreterThree(1)">Interpreter 3</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingOne(1.25)">Branching 1</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingTwo(1)">Branching 2</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingThree(0.8)">Branching 3</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingFour(0.3)">Branching 4</a>
-			<div class="dropdown-divider"></div>
 			<p>|| 3D Diagrams</p>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="bush(2)">Bush</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="flower(1.15)">Flower</a> <!--
@@ -48,6 +39,15 @@
 			<a class="dropdown-item" href="javascript:void(0)" onclick="complexThree(0.1)">Complex Tree 3</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="complexFour(1)">Complex Tree 4</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="complexFive(0.01)">Complex Tree 5</a> --> 
+			<div class="dropdown-divider"></div>
+			<p>|| 2D Diagrams</p>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="interpreterOne(1)">Quadratic Koch Island</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="interpreterTwo(1)">Quadratic Snowflake Curve</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="interpreterThree(1)">Islands & Lakes Combo</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingOne(1.25)">Bracketed Edge-Rewriting 1</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingThree(0.8)">Bracketed Edge-Rewriting 2</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingTwo(1)">Bracketed Node-Rewriting 1</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="branchingFour(0.3)">Bracketed Node-Rewriting 2</a>
 		</div>
 	</div>
 
@@ -58,15 +58,24 @@
 				Info</button>
 			<div class="card-body" style="color: rgb(65, 156, 77); font-size: 11;">
 				<h5>L-Systems</h5>
-				<h6>Eric Bollar 7/14/20</h6>
+				<h6>Eric Bollar 7/15/20</h6>
 				<div id="info">
+					<p> My Website: <a href="http://www.ericbollar.com">http://www.ericbollar.com</a><br>
+						Github: <a href="http://github.com/EricBollar/L-Systems">http://github.com/EricBollar/L-Systems</a><br>
+						More info: <a href="http://algorithmicbotany.org/papers/abop/abop.pdf">http://algorithmicbotany.org/papers/abop/abop.pdf</a>
+					</p>
 					<h6 style='text-align: center;'>Controls</h6>
 					<p>Use the red 'Select Tree' button to cycle through different examples. Click and
 						hold down the mouse button to rotate the shown example around the Y-axis. Use the blue 'Show/Hide Info' button
 						to toggle the info box's visibility.
 					</p>
+					<h6 id="treename" style='text-align: center;'>Current Tree Loading</h6>
+					<p id="currentTreeInfo"> n = ?, δ = ??°, Axiom = ? <br>
+						Rule 1 -> ?
+					</p>
 					<h6 style='text-align: center;'>Interpreting Commands</h6>
-					<p> <b>"F"</b> <i>Move forward a step of length d. The state of the turtle
+					<p> How the state of the turtle changes:<br>
+						<b>"F"</b> <i>Move forward a step of length d. The state of the turtle
 							changes to (x, y, α), where x = x + d*cosα and y = y + d*sinα.
 							A line segment between points (x, y) and (x, y)is drawn.</i><br>
 						<b>"f"</b> <i> Move forward a step of length d without drawing a line.</i><br>
@@ -90,14 +99,6 @@
 						<b>"}"</b> <i> Indicates the completion of a leaf.</i><br>
 						<b>"'"</b> <i> Increments the color index by 1. </i><br>
 						<b>"!"</b> <i> Decrements the diameter of line segments. </i>
-					</p>
-					<h6 id="treename" style='text-align: center;'>Current Tree: Loading</h6>
-					<p id="currentTreeInfo"> n = ?, δ = ??°, Axiom = ? <br>
-						Rule 1 -> ?
-					</p>
-					<p> My Website: <a href="https://ericbollar.com">https://ericbollar.com</a><br>
-						Github: <a href="https://github.com/EricBollar/L-Systems">https://github.com/EricBollar/L-Systems</a><br>
-						More info: <a href="http://algorithmicbotany.org/papers/abop/abop.pdf">http://algorithmicbotany.org/papers/abop/abop.pdf</a>
 					</p>
 				</div>
 			</div>
@@ -169,6 +170,8 @@
 		var brown = 0xC6710B;
 		var green = 0x22dd4d;
 		var purple = 0xCA35B3;
+		var blue = 0x1ecbe1;
+		var red = 0xED4412;
 		bush(2);
 
 		function drawer(string, angle, step, start, branchC, leafC) { //, e, t) {
@@ -178,6 +181,10 @@
 			var leafPoints = [];
 			var inleaf = false;
 			var lineWidth = 1;
+			var greeInd = 0;
+			var greens = [
+				0x24db67, 0x1fe02a, 0x3fc43b, 0x1ce356, 0x49b654
+			];
 
 			var turtle = new THREE.Object3D();
 			turtle.position.set(start.x, start.y, start.z);
@@ -365,7 +372,13 @@
 				} else if (string[i] === "}") {
 					inleaf = false;
 					leafPoints.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
-					var material = new THREE.LineBasicMaterial({ color: leafC, side: THREE.DoubleSide });
+					if (greeInd >= greens.length - 1) {
+						greeInd = 0;
+					} else {
+						greeInd++;
+					}
+					console.log(greeInd);
+					var material = new THREE.LineBasicMaterial({ color: greens[greeInd], side: THREE.DoubleSide });
 					var geometry = new THREE.PlaneBufferGeometry().setFromPoints(leafPoints);
 					var line = new THREE.Mesh(geometry, material);
 					scene.add(line);
@@ -427,7 +440,7 @@
 			}
 			var startPos = new THREE.Vector3(20, -20, 0);
 			drawer(next, angle, step, startPos, green, green, 0, new THREE.Vector3(0, 0, 0));
-			document.getElementById("treename").innerHTML = "Current Tree: 'Interpreter 1'";
+			document.getElementById("treename").innerHTML = "Shown: Quadratic Koch Island";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 2, δ = 90°, Axiom = F-F-F-F <br> F -> F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F";
 		}
 
@@ -450,8 +463,8 @@
 				n--;
 			}
 			var startPos = new THREE.Vector3(42, -20, 0);
-			drawer(next, angle, step, startPos, green, green, 0, new THREE.Vector3(0, 0, 0));
-			document.getElementById("treename").innerHTML = "Current Tree: 'Interpreter 2'";
+			drawer(next, angle, step, startPos, blue, blue, 0, new THREE.Vector3(0, 0, 0));
+			document.getElementById("treename").innerHTML = "Shown: Quadratic Snowflake Curve";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 4, δ = 90°, Axiom = -F <br> F -> F+F-F-F+F";
 		}
 
@@ -476,8 +489,8 @@
 				n--;
 			}
 			var startPos = new THREE.Vector3(-16, -20, 0);
-			drawer(next, angle, step, startPos, green, green);
-			document.getElementById("treename").innerHTML = "Current Tree: 'Interpreter 3'";
+			drawer(next, angle, step, startPos, red, red);
+			document.getElementById("treename").innerHTML = "Shown: Islands & Lakes Combo";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 2, δ = 90°, Axiom = F+F+F+F <br> F -> F+f-FF+F+FF+Ff+FF-f+FF-F-FF-Ff-FFF <br> f -> ffffff";
 		}
 
@@ -501,7 +514,7 @@
 			}
 			var startPos = new THREE.Vector3(0, -40, 0);
 			drawer(next, angle, step, startPos, green, green);
-			document.getElementById("treename").innerHTML = "Current Tree: 'Branching 1'";
+			document.getElementById("treename").innerHTML = "Shown: Bracketed Edge-Rewriting 1";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 4, δ = 22.5°, Axiom = F <br> F -> FF-[-F+F+F]+[+F-F-F]";
 		}
 
@@ -526,8 +539,8 @@
 				n--;
 			}
 			var startPos = new THREE.Vector3(0, -42, 0);
-			drawer(next, angle, step, startPos, green, green);
-			document.getElementById("treename").innerHTML = "Current Tree: 'Branching 2'";
+			drawer(next, angle, step, startPos, blue, blue);
+			document.getElementById("treename").innerHTML = "Shown: Bracketed Node-Rewriting 1";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 5, δ = 22.5°, Axiom = X <br> F -> FF <br> X -> F-[[X]+X]+F[+FX]-X";
 		}
 
@@ -610,8 +623,8 @@
 			}
 			var startPos = new THREE.Vector3(0, -40, 0);
 			console.log(next);
-			drawer(next, angle, step, startPos, green, green);
-			document.getElementById("treename").innerHTML = "Current Tree: 'Branching 3'";
+			drawer(next, angle, step, startPos, red, red);
+			document.getElementById("treename").innerHTML = "Shown: Bracketed Edge-Rewriting 2";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 5, δ = 25.7°, Axiom = F <br> F -> F[+F]F[-F]F";
 		}
 
@@ -637,8 +650,8 @@
 			}
 			var startPos = new THREE.Vector3(0, -40, 0);
 			console.log(next);
-			drawer(next, angle, step, startPos, green, green);
-			document.getElementById("treename").innerHTML = "Current Tree: 'Branching 4'";
+			drawer(next, angle, step, startPos, purple, purple);
+			document.getElementById("treename").innerHTML = "Shown: Bracketed Node-Rewriting 2";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 7, δ = 25.7°, Axiom = X <br> X -> F[+X][-X]FX <br> F -> FF";
 		}
 
