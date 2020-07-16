@@ -120,6 +120,16 @@
 		var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
 		var scene = new THREE.Scene();
 
+		function addLighting()
+		{
+			scene.background = new THREE.Color('black');
+			const skyColor = 0xB1E1FF;  // light blue
+			const groundColor = 0xB97A20;  // brownish orange
+			const intensity = 1;
+			const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+			scene.add(light)
+		}
+
 		var isMouseDown = false;
 
 		window.onmousedown = function () { mouseDown = true };
@@ -180,6 +190,7 @@
 		var blue = 0x1ecbe1;
 		var red = 0xED4412;
 		bush(2);
+		//test();
 
 		function drawer(string, angle, step, start, branchC, leafC) { //, e, t) {
 			var points = [];
@@ -196,7 +207,7 @@
 			var turtle = new THREE.Object3D();
 			turtle.position.set(start.x, start.y, start.z);
 			turtle.rotation.set(90 * Math.PI / 180, 0, 90 * Math.PI / 180);
-			//points.push(turtle.position)
+			points.push(turtle.position)
 			for (i = 0; i < string.length; i++) {
 				if (string[i] === "F" && !inleaf) { // go forward and draw
 					/*if (i !== string.length - 1 && string[i+1] === "(") {
@@ -330,7 +341,7 @@
 					} else {
 						turtle.rotateZ(angle * Math.PI / 180);
 					}*/
-					turtle.rotateZ(angle * Math.PI / 180);
+					turtle.rotateZ(-angle * Math.PI / 180);
 				} else if (string[i] === "/") { // roll right
 					/*
 					if (i !== string.length - 1 && string[i+1] === "(") {
@@ -354,10 +365,9 @@
 					} else {
 						turtle.rotateZ(-angle * Math.PI / 180);
 					}*/
-					turtle.rotateZ(-angle * Math.PI / 180);
+					turtle.rotateZ(angle * Math.PI / 180);
 				} else if (string[i] === "|") { // turn around
-					turtle.rotateX(-Math.PI);
-					turtle.rotateY(-Math.PI);
+					turtle.rotateX(Math.PI);
 				} else if (string[i] === "[") {
 					positions.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
 					rotations.push(new THREE.Vector3(turtle.rotation.x, turtle.rotation.y, turtle.rotation.z));
@@ -379,19 +389,29 @@
 				} else if (string[i] === "}") {
 					inleaf = false;
 					leafPoints.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
+					var currCol;
 					if (leafC === green) {
 						if (greeInd >= greens.length - 1) {
 							greeInd = 0;
 						} else {
 							greeInd++;
 						}
-						var material = new THREE.LineBasicMaterial({ color: greens[greeInd], side: THREE.DoubleSide });
+						var currCol = greens[greeInd];
 					} else {
-						var material = new THREE.LineBasicMaterial({ color: leafC, side: THREE.DoubleSide });
+						var currCol = leafC;
 					}
-					var geometry = new THREE.PlaneBufferGeometry().setFromPoints(leafPoints);
-					var line = new THREE.Mesh(geometry, material);
-					scene.add(line);
+					var geometry = new THREE.Geometry();
+					for (let i = 0; i < leafPoints.length; i++) {
+						geometry.vertices.push(leafPoints[i]);
+					}
+					normal = new THREE.Vector3(0, 0, 1);
+					for (let i = 0; i < leafPoints.length - 2; i++) {
+						var face = new THREE.Face3(0, i + 1, i + 2, normal);
+						geometry.faces.push(face);
+					}
+					geometry.computeFaceNormals();
+					geometry.computeVertexNormals();
+					scene.add(new THREE.Mesh(geometry, new THREE.LineBasicMaterial({ color: currCol, side: THREE.DoubleSide })));
 					leafPoints = [];
 				} else {
 					//console.log("Lost: " + string[i] + i);
@@ -428,6 +448,15 @@
 			while (scene.children.length > 0) {
 				scene.remove(scene.children[0]);
 			}
+			addLighting();
+		}
+
+		function test() {
+			clear();
+			angle = 18;
+			text = "[{f+f-ff-f+|+f-ff-f}]"
+			var startPos = new THREE.Vector3(0, 0, 0);
+			drawer(text, angle, 6, startPos, green, green, 0, new THREE.Vector3(0, 0, 0));
 		}
 
 		function interpreterOne(step) {
@@ -681,7 +710,7 @@
 					} else if (previous[i] === "S") {
 						next += "SFS";
 					} else if (previous[i] === "L") {
-						next += "[’{+f−ff−f+|+f−ff−f}]";
+						next += "['{f+f-ff-f+|+f-ff-f}]";
 					} else if (previous[i] === "K") {
 						next += "[&&&R'/W////W////W////W////W]";
 					} else if (previous[i] === "R") {
