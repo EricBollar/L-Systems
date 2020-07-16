@@ -159,14 +159,6 @@
 		var center = new THREE.Vector3(0, 0, 0);
 		function mouseMove(event) {
 
-			// auto rotate 
-			/*
-			angleXZ += step;
-			camera.position.x = Math.sin(angleXZ) * radius;
-			camera.position.z = Math.cos(angleXZ) * -radius;
-			camera.lookAt(center);
-			render(); */
-
 			if (isMouseDown) {
 				var x = event.clientX;
 				var y = event.clientY;
@@ -209,55 +201,14 @@
 			turtle.rotation.set(90 * Math.PI / 180, 0, 90 * Math.PI / 180);
 			for (i = 0; i < string.length; i++) {
 				if (string[i] === "F" && !inleaf) { // go forward and draw
-					/*if (i !== string.length - 1 && string[i+1] === "(") {
-						console.log("moved");
-						var curr = i+2;
-						var num = "";
-						while (string[curr] !== ")") {
-							num += string[curr];
-							curr++;
-						}
-						i = curr;
-						turtle.translateZ(-parseFloat(num) * 0.04 * step);
-					} else {
-						turtle.translateZ(-step);
-					}*/
 					turtle.translateZ(-step);
 					points.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
-
-					/*
-					if (e !== 0) {
-						console.log(t);
-						var direction = new THREE.Vector3();
-						turtle.getWorldDirection(direction);
-						angle = e * direction.cross(new THREE.Vector3(t.x, t.y, t.z)).length();
-						var temp = new THREE.Vector3(t.x, t.y, t.z);
-						var axis = new THREE.Vector3(t.x, t.y, t.z);
-						axis = axis.cross(direction);
-						console.log(axis);
-						axis /= temp.cross(direction).length();
-						console.log(axis);
-						turtle.rotateOnWorldAxis(axis, angle);
-					} */
 				} else if (string[i] === "f") {
 					var material = new THREE.LineBasicMaterial({ color: branchC, linewidth: lineWidth });
 					var geometry = new THREE.BufferGeometry().setFromPoints(points);
 					var line = new THREE.Line(geometry, material);
 					scene.add(line);
 					points = [];
-					/*
-					if (i !== string.length - 1 && string[i+1] === "(") {
-						var curr = i+2;
-						var num = "";
-						while (string[curr] !== ")") {
-							num += string[curr];
-							curr++;
-						}
-						i = curr;
-						turtle.translateZ(-parseFloat(num) * 0.04 * step);
-					} else {
-						turtle.translateZ(-step);
-					}*/
 					turtle.translateZ(-step);
 					if (inleaf) {
 						leafPoints.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
@@ -265,105 +216,16 @@
 						points.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
 					}
 				} else if (string[i] === "+") { // turn left
-					/*
-					if (i !== string.length - 1 && string[i+1] === "(") {
-						var curr = i+2;
-						var num = "";
-						while (string[curr] !== ")") {
-							num += string[curr];
-							curr++;
-						}
-						i = curr;
-						turtle.rotateX((-parseFloat(num)) * Math.PI / 180);
-					} else {
-						turtle.rotateX(-angle * Math.PI / 180);
-					}*/
 					turtle.rotateX(-angle * Math.PI / 180);
 				} else if (string[i] === "-") { // turn right
-					/*
-					if (i !== string.length - 1 && string[i+1] === "(") {
-						var curr = i+2;
-						var num = "";
-						while (string[curr] !== ")") {
-							num += string[curr];
-							curr++;
-						}
-						i = curr;
-						turtle.rotateX((parseFloat(num)) * Math.PI / 180);
-					} else {
-						turtle.rotateX(angle * Math.PI / 180);
-					}*/
 					turtle.rotateX(angle * Math.PI / 180);
 				} else if (string[i] === "&") { // pitch down
-					/*
-					if (i !== string.length - 1 && string[i+1] === "(") {
-						var curr = i+2;
-						var num = "";
-						while (string[curr] !== ")") {
-							num += string[curr];
-							curr++;
-						}
-						i = curr;
-						turtle.rotateY((-parseFloat(num)) * Math.PI / 180);
-					} else {
-						turtle.rotateY(-angle * Math.PI / 180);
-					}*/
 					turtle.rotateY(-angle * Math.PI / 180);
 				} else if (string[i] === "∧") { // pitch up
-					/*
-					if (i !== string.length - 1 && string[i+1] === "(") {
-						var curr = i+2;
-						var num = "";
-						while (string[curr] !== ")") {
-							num += string[curr];
-							curr++;
-						}
-						i = curr;
-						turtle.rotateY((parseFloat(num)) * Math.PI / 180);
-					} else {
-						turtle.rotateY(angle * Math.PI / 180);
-					}*/
 					turtle.rotateY(angle * Math.PI / 180);
 				} else if (string[i] === "*") { // roll left -> actually "\"
-					/*
-					if (i !== string.length - 1 && string[i+1] === "(") {
-						var curr = i+2;
-						var num = "";
-						while (string[curr] !== ")") {
-							num += string[curr];
-							curr++;
-						}
-						i = curr;
-						var matrix = new THREE.Matrix4();
-						matrix.extractRotation( turtle.matrix );
-						turtle.rotateZ((parseFloat(num)) * Math.PI / 180);
-					} else {
-						turtle.rotateZ(angle * Math.PI / 180);
-					}*/
 					turtle.rotateZ(-angle * Math.PI / 180);
 				} else if (string[i] === "/") { // roll right
-					/*
-					if (i !== string.length - 1 && string[i+1] === "(") {
-						var curr = i+2;
-						var num = "";
-						while (string[curr] !== ")") {
-							num += string[curr];
-							curr++;
-						}
-						i = curr;
-						var direction = new THREE.Vector3( 0, 0, -1 ).applyQuaternion( turtle.quaternion );
-						cx = t.y * direction.z - t.z * direction.y;
-						cy = t.z * direction.x - t.x * direction.z;
-						cz = t.x * direction.y - t.y * direction.x;
-						abs = Math.sqrt(Math.pow(cx, 2) + Math.pow(cy, 2) + Math.pow(cz, 2));
-						add = e * abs;
-						turtle.rotateZ((-parseFloat(num)) * Math.PI / 180);
-						
-						axis = new THREE.Vector3(cx, cy, cz);
-						turtle.rotateOnWorldAxis(axis, add);
-					} else {
-						turtle.rotateZ(-angle * Math.PI / 180);
-					}*/
 					turtle.rotateZ(angle * Math.PI / 180);
 				} else if (string[i] === "|") { // turn around
 					turtle.rotateX(Math.PI);
@@ -728,203 +590,6 @@
 			drawer(next, angle, step, startPos, green, purple);
 			document.getElementById("treename").innerHTML = "Current Tree: 'Flower'";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 5, δ = 18°, Axiom = P <br> P -> Q+[P+K]--//[--L]Q[++L]-[PK]++PK <br> Q -> FS[//&&L][//∧∧L]FS <br> S -> SFS <br> L -> [’{+f−ff−f+|+f−ff−f}] <br> K -> [&&&R'/W////W////W////W////W] <br> R -> FF <br> W -> [‘∧F][{&&&&−f+f|−f+f}]";
-		}
-
-		function complexOne(step) {
-			clear();
-			start = "!(1)F(200)/(45)A";
-			n = 6;
-			angle = 0;
-			d1 = 94.74;
-			d2 = 132.63;
-			a = 18.95;
-			l = 1.109;
-			e = 0.22;
-			t = new THREE.Vector3(0, -1, 0);
-			previous = start;
-			while (n > 0) {
-				next = "";
-				for (i = 0; i < previous.length; i++) {
-					if (previous[i] === "A") {
-						next += "F(50)[&(" + a + ")F(50)A]/(" + d1 + ")[&(" + a + ")F(50)A]/(" + d2 + ")[&(" + a + ")F(50)A]";
-					} else if (previous[i] === "F") {
-						var curr = i + 2;
-						var num = "";
-						while (previous[curr] !== ")") {
-							num += previous[curr];
-							curr++;
-						}
-						i = curr;
-						next += "F(" + (parseFloat(num) * l) + ")";
-					} else {
-						next += previous[i];
-					}
-				}
-				previous = next;
-				n--;
-			}
-			var startPos = new THREE.Vector3(0, -60, 0);
-			console.log(next);
-			drawer(next, angle, step, startPos, green, green, e, t);
-		}
-
-		function complexTwo(step) {
-			clear();
-			start = "!(1)F(200)/(45)A";
-			n = 8;
-			angle = 0;
-			d1 = 137.5;
-			d2 = 137.5;
-			a = 18.95;
-			l = 1.109;
-			e = 0.14;
-			t = new THREE.Vector3(0, -1, 0);
-			previous = start;
-			while (n > 0) {
-				next = "";
-				for (i = 0; i < previous.length; i++) {
-					if (previous[i] === "A") {
-						next += "F(50)[&(" + a + ")F(50)A]/(" + d1 + ")[&(" + a + ")F(50)A]/(" + d2 + ")[&(" + a + ")F(50)A]";
-					} else if (previous[i] === "F") {
-						var curr = i + 2;
-						var num = "";
-						while (previous[curr] !== ")") {
-							num += previous[curr];
-							curr++;
-						}
-						i = curr;
-						next += "F(" + (parseFloat(num) * l) + ")";
-					} else {
-						next += previous[i];
-					}
-				}
-				previous = next;
-				n--;
-			}
-			var startPos = new THREE.Vector3(0, -67, 0);
-			console.log(next);
-			drawer(next, angle, step, startPos, green, green, e, t);
-		}
-
-		function complexThree(step) {
-			clear();
-			start = "!(1)F(200)/(45)A";
-			n = 8;
-			angle = 0;
-			d1 = 112.5;
-			d2 = 157.5;
-			a = 22.5;
-			l = 1.79;
-			e = 0.27;
-			t = new THREE.Vector3(-0.02, -1, 0);
-			previous = start;
-			while (n > 0) {
-				next = "";
-				for (i = 0; i < previous.length; i++) {
-					if (previous[i] === "A") {
-						next += "!F(50)[&(" + a + ")F(50)A]/(" + d1 + ")[&(" + a + ")F(50)A]/(" + d2 + ")[&(" + a + ")F(50)A]";
-					} else if (previous[i] === "F") {
-						var curr = i + 2;
-						var num = "";
-						while (previous[curr] !== ")") {
-							num += previous[curr];
-							curr++;
-						}
-						i = curr;
-						next += "F(" + (parseFloat(num) * l) + ")";
-					} else {
-						next += previous[i];
-					}
-				}
-				previous = next;
-				n--;
-			}
-			var startPos = new THREE.Vector3(0, -100, 0);
-			console.log(next);
-			drawer(next, angle, step, startPos, green, green, e, t);
-		}
-
-		function complexFour(step) {
-			clear();
-			start = "!(1)F(200)/(45)A";
-			n = 6;
-			angle = 0;
-			d1 = 180.0;
-			d2 = 252.0;
-			a = 36.0;
-			l = 1.07;
-			e = 0.4;
-			t = new THREE.Vector3(-.61, 0.77, -0.19);
-			previous = start;
-			while (n > 0) {
-				next = "";
-				for (i = 0; i < previous.length; i++) {
-					if (previous[i] === "A") {
-						next += "!F(50)[&(" + a + ")F(50)A]/(" + d1 + ")[&(" + a + ")F(50)A]/(" + d2 + ")[&(" + a + ")F(50)A]";
-					} else if (previous[i] === "F") {
-						var curr = i + 2;
-						var num = "";
-						while (previous[curr] !== ")") {
-							num += previous[curr];
-							curr++;
-						}
-						i = curr;
-						next += "F(" + (parseFloat(num) * l) + ")";
-					} else {
-						next += previous[i];
-					}
-				}
-				previous = next;
-				n--;
-			}
-			var startPos = new THREE.Vector3(0, -20, 0);
-			console.log(next);
-			drawer(next, angle, step, startPos, green, green, e, t);
-		}
-
-		function complexFive(step) {
-			clear();
-			start = "A(1)";
-			n = 10;
-			angle = 0;
-			r1 = 180.0;
-			r2 = 252.0;
-			a1 = 36.0;
-			a2 = 1.07;
-			previous = start;
-			while (n > 0) {
-				next = "";
-				for (i = 0; i < previous.length; i++) {
-					if (previous[i] === "A") {
-						var curr = i + 2;
-						var num = "";
-						while (previous[curr] !== ")") {
-							num += previous[curr];
-							curr++;
-						}
-						i = curr;
-						l = parseFloat(num);
-						next += "F(" + l + ")[&(" + a1 + ")B(" + (l * r1) + ")]/(180)[&(" + a2 + ")B(" + (l * r2) + ")]";
-					} else if (previous[i] === "B") {
-						var curr = i + 2;
-						var num = "";
-						while (previous[curr] !== ")") {
-							num += previous[curr];
-							curr++;
-						}
-						i = curr;
-						l = parseFloat(num);
-						next += "F(" + l + ")[+(" + a1 + ")B(" + (l * r1) + ")][-(" + a2 + ")B(" + (l * r2) + ")]";
-					} else {
-						next += previous[i];
-					}
-				}
-				previous = next;
-				n--;
-			}
-			var startPos = new THREE.Vector3(0, -60, 0);
-			console.log(next);
-			drawer(next, angle, step, startPos, green, green, 0, new THREE.Vector3(0, 0, 0));
 		}
 
 		function render() {
