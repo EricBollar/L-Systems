@@ -207,7 +207,6 @@
 			var turtle = new THREE.Object3D();
 			turtle.position.set(start.x, start.y, start.z);
 			turtle.rotation.set(90 * Math.PI / 180, 0, 90 * Math.PI / 180);
-			points.push(turtle.position)
 			for (i = 0; i < string.length; i++) {
 				if (string[i] === "F" && !inleaf) { // go forward and draw
 					/*if (i !== string.length - 1 && string[i+1] === "(") {
