@@ -32,8 +32,8 @@
 		</button>
 		<div class="dropdown-menu dropdown-menu-center">
 			<p>|| 3D Diagrams</p>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="bush(2)">Bush</a>
-			<a class="dropdown-item" href="javascript:void(0)" onclick="flower(1.15)">Flower</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="flower(1.15, false)">Flower - Lines</a>
+			<a class="dropdown-item" href="javascript:void(0)" onclick="bush(2, false)">Bush - Lines</a>
 			<!--
 			<a class="dropdown-item" href="javascript:void(0)" onclick="complexOne(2)">Complex Tree 1</a>
 			<a class="dropdown-item" href="javascript:void(0)" onclick="complexTwo(1.5)">Complex Tree 2</a>
@@ -178,19 +178,21 @@
 
 		var brown = 0xC6710B;
 		var green = 0x22dd4d;
+		var darkgreen = 0x3fc43b;
 		var purple = 0xCA35B3;
 		var blue = 0x1ecbe1;
 		var red = 0xED4412;
-		bush(2);
-		//test();
+		var white = 0xffffff;
+		bush(2, false);
 
-		function drawer(string, angle, step, start, branchC, leafC) { //, e, t) {
+		function drawer(string, angle, step, start, branchC, leafC, is3d, startWidth) { //, e, t) {
 			var points = [];
 			var positions = [];
 			var rotations = [];
 			var leafPoints = [];
+			var leafColor = green;
 			var inleaf = false;
-			var lineWidth = 1;
+			var lineWidth = startWidth;
 			var greeInd = 0;
 			var greens = [
 				0x24db67, 0x1fe02a, 0x3fc43b, 0x1ce356, 0x49b654
@@ -199,21 +201,34 @@
 			var turtle = new THREE.Object3D();
 			turtle.position.set(start.x, start.y, start.z);
 			turtle.rotation.set(90 * Math.PI / 180, 0, 90 * Math.PI / 180);
+			prevPoint = new THREE.Vector3(start.x, start.y, start.z);;
 			for (i = 0; i < string.length; i++) {
 				if (string[i] === "F" && !inleaf) { // go forward and draw
 					turtle.translateZ(-step);
 					points.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
+					if (!is3d) {
+						var material = new THREE.LineBasicMaterial({ color: branchC, linewidth: lineWidth });
+						var geometry = new THREE.BufferGeometry().setFromPoints(points);
+						var line = new THREE.Line(geometry, material);
+						scene.add(line);
+					} else {
+						var curr = new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z);
+						draw3D(prevPoint, curr, lineWidth, branchC);
+						prevPoint = curr;
+					}
 				} else if (string[i] === "f") {
-					var material = new THREE.LineBasicMaterial({ color: branchC, linewidth: lineWidth });
-					var geometry = new THREE.BufferGeometry().setFromPoints(points);
-					var line = new THREE.Line(geometry, material);
-					scene.add(line);
 					points = [];
 					turtle.translateZ(-step);
 					if (inleaf) {
 						leafPoints.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
 					} else {
-						points.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
+						if (!is3d) {
+							points.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z))
+						} else {
+							var curr = new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z);
+							draw3D(prevPoint, curr, lineWidth, branchC);
+							prevPoint = curr;
+						}
 					}
 				} else if (string[i] === "+") { // turn left
 					turtle.rotateX(-angle * Math.PI / 180);
@@ -230,37 +245,57 @@
 				} else if (string[i] === "|") { // turn around
 					turtle.rotateX(Math.PI);
 				} else if (string[i] === "[") {
+					if (lineWidth > 0.1) {
+						lineWidth = lineWidth - 0.1;
+					}
 					positions.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
 					rotations.push(new THREE.Vector3(turtle.rotation.x, turtle.rotation.y, turtle.rotation.z));
 				} else if (string[i] === "]") {
+					if (lineWidth < startWidth) {
+						lineWidth = lineWidth + 0.1;
+					}
+					console.log(lineWidth);
 					turtle.position.set(positions[positions.length - 1].x, positions[positions.length - 1].y, positions[positions.length - 1].z);
 					turtle.rotation.set(rotations[rotations.length - 1].x, rotations[rotations.length - 1].y, rotations[rotations.length - 1].z);
 					positions.splice(-1, 1);
 					rotations.splice(-1, 1);
-					var material = new THREE.LineBasicMaterial({ color: branchC, linewidth: lineWidth });
-					var geometry = new THREE.BufferGeometry().setFromPoints(points);
-					var line = new THREE.Line(geometry, material);
-					scene.add(line);
+
+					if (!is3d) {
+						var material = new THREE.LineBasicMaterial({ color: branchC, linewidth: lineWidth });
+						var geometry = new THREE.BufferGeometry().setFromPoints(points);
+						var line = new THREE.Line(geometry, material);
+						scene.add(line);
+					} else {
+						var curr = new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z);
+						draw3D(prevPoint, curr, lineWidth, branchC);
+						prevPoint = curr;
+					}
+
 					points = [];
 					points.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
+					prevPoint = curr;
 				} else if (string[i] === "{") {
 					inleaf = true;
 					leafPoints = [];
 					leafPoints.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
-				} else if (string[i] === "}") {
-					inleaf = false;
-					leafPoints.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
-					var currCol;
-					if (leafC === green) {
+					if (string[i+1] === "w") {
+						leafColor = white;
+					} else if (string[i+1] === "g") {
+						leafColor = darkgreen;
+					} else if (string[i+1] === "p") {
+						leafColor = purple;
+					} else if (string[i+1] === "r") {
 						if (greeInd >= greens.length - 1) {
 							greeInd = 0;
 						} else {
 							greeInd++;
 						}
-						var currCol = greens[greeInd];
-					} else {
-						var currCol = leafC;
+						leafColor = greens[greeInd];
 					}
+					i++;
+				} else if (string[i] === "}") {
+					inleaf = false;
+					leafPoints.push(new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z));
 					var geometry = new THREE.Geometry();
 					for (let i = 0; i < leafPoints.length; i++) {
 						geometry.vertices.push(leafPoints[i]);
@@ -272,20 +307,41 @@
 					}
 					geometry.computeFaceNormals();
 					geometry.computeVertexNormals();
-					scene.add(new THREE.Mesh(geometry, new THREE.LineBasicMaterial({ color: currCol, side: THREE.DoubleSide })));
+					scene.add(new THREE.Mesh(geometry, new THREE.LineBasicMaterial({ color: leafColor, side: THREE.DoubleSide })));
 					leafPoints = [];
-				} else {
-					//console.log("Lost: " + string[i] + i);
 				}
+				prevPoint = new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z);
 			}
-			var material = new THREE.LineBasicMaterial({ color: branchC, linewidth: lineWidth });
-			var geometry = new THREE.BufferGeometry().setFromPoints(points);
-			var line = new THREE.Line(geometry, material);
-			scene.add(line);
+			if (!is3d) {
+				var material = new THREE.LineBasicMaterial({ color: branchC, linewidth: lineWidth });
+				var geometry = new THREE.BufferGeometry().setFromPoints(points);
+				var line = new THREE.Line(geometry, material);
+				scene.add(line);
+			} else {
+				var curr = new THREE.Vector3(turtle.position.x, turtle.position.y, turtle.position.z);
+				draw3D(prevPoint, curr, lineWidth, branchC);
+				prevPoint = curr;
+			}
 
 			angleXZ = 0;
 			camera.position.set(0, 0, -radius);
 			camera.lookAt(center);
+			render();
+		}
+
+		function draw3D(pointA, pointB, radius, branchC) {
+			var vec = new THREE.Vector3(pointA.x - pointB.x, pointA.y - pointB.y, pointA.z - pointB.z);
+			var geometry = new THREE.CylinderGeometry( radius, radius, vec.length(), 6, 1, true );
+			var material = new THREE.MeshBasicMaterial( {color: branchC, side: THREE.DoubleSide} );
+			var cylinder = new THREE.Mesh( geometry, material );
+			cylinder.position.set((pointA.x + pointB.x)/2, (pointA.y + pointB.y)/2, (pointA.z + pointB.z)/2);
+			
+			var axis = new THREE.Vector3(0, 1, 0);
+			cylinder.quaternion.setFromUnitVectors(axis, vec.clone().normalize());
+
+			camera.position.set(0, 0, -100);
+			camera.lookAt(new THREE.Vector3(0, 0, 0));
+			scene.add( cylinder );
 			render();
 		}
 
@@ -339,7 +395,7 @@
 				n--;
 			}
 			var startPos = new THREE.Vector3(20, -20, 0);
-			drawer(next, angle, step, startPos, green, green, 0, new THREE.Vector3(0, 0, 0));
+			drawer(next, angle, step, startPos, green, green, false, 0);
 			document.getElementById("treename").innerHTML = "Shown: Quadratic Koch Island";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 2, δ = 90°, Axiom = F-F-F-F <br> F -> F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F";
 		}
@@ -363,7 +419,7 @@
 				n--;
 			}
 			var startPos = new THREE.Vector3(42, -20, 0);
-			drawer(next, angle, step, startPos, blue, blue, 0, new THREE.Vector3(0, 0, 0));
+			drawer(next, angle, step, startPos, blue, blue, false, 0);
 			document.getElementById("treename").innerHTML = "Shown: Quadratic Snowflake Curve";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 4, δ = 90°, Axiom = -F <br> F -> F+F-F-F+F";
 		}
@@ -389,7 +445,7 @@
 				n--;
 			}
 			var startPos = new THREE.Vector3(-16, -20, 0);
-			drawer(next, angle, step, startPos, red, red);
+			drawer(next, angle, step, startPos, red, red, false, 0);
 			document.getElementById("treename").innerHTML = "Shown: Islands & Lakes Combo";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 2, δ = 90°, Axiom = F+F+F+F <br> F -> F+f-FF+F+FF+Ff+FF-f+FF-F-FF-Ff-FFF <br> f -> ffffff";
 		}
@@ -413,7 +469,7 @@
 				n--;
 			}
 			var startPos = new THREE.Vector3(0, -40, 0);
-			drawer(next, angle, step, startPos, green, green);
+			drawer(next, angle, step, startPos, green, green, false, 0);
 			document.getElementById("treename").innerHTML = "Shown: Bracketed Edge-Rewriting 1";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 4, δ = 22.5°, Axiom = F <br> F -> FF-[-F+F+F]+[+F-F-F]";
 		}
@@ -439,12 +495,12 @@
 				n--;
 			}
 			var startPos = new THREE.Vector3(0, -42, 0);
-			drawer(next, angle, step, startPos, blue, blue);
+			drawer(next, angle, step, startPos, blue, blue, false, 0);
 			document.getElementById("treename").innerHTML = "Shown: Bracketed Node-Rewriting 1";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 5, δ = 22.5°, Axiom = X <br> F -> FF <br> X -> F-[[X]+X]+F[+FX]-X";
 		}
 
-		function bush(step) {
+		function bush(step, is3) {
 			clear();
 			start = "A";
 			n = 7;
@@ -460,7 +516,7 @@
 					} else if (previous[i] === "S") {
 						next += "FL";
 					} else if (previous[i] === "L") {
-						next += "[’’’∧∧{-f+f+f-|-f+f+f}]";
+						next += "[’’’∧∧{r-f+f+f-|-f+f+f}]";
 					} else {
 						next += previous[i];
 					}
@@ -469,7 +525,8 @@
 				n--;
 			}
 			var startPos = new THREE.Vector3(0, -40, 0);
-			drawer(next, angle, step, startPos, brown, green);
+			drawer(next, angle, step, startPos, brown, green, is3, 1);
+			console.log(next);
 			document.getElementById("treename").innerHTML = "Current Tree: 'Bush'";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 7, δ = 22.5°, Axiom = A <br> A -> [&FL!A]/////’[&FL!A]///////’[&FL!A] <br> F -> S/////F <br> S -> FL <br> L -> [’’’∧∧{-f+f+f-|-f+f+f}]";
 		}
@@ -500,7 +557,7 @@
 			}
 			var startPos = new THREE.Vector3(0, 0, 0);
 			console.log(next);
-			drawer(next, angle, step, startPos, green, green);
+			drawer(next, angle, step, startPos, green, green, true, 0);
 		}
 
 		function branchingThree(step) {
@@ -523,7 +580,7 @@
 			}
 			var startPos = new THREE.Vector3(0, -40, 0);
 			console.log(next);
-			drawer(next, angle, step, startPos, red, red);
+			drawer(next, angle, step, startPos, red, red, false, 0);
 			document.getElementById("treename").innerHTML = "Shown: Bracketed Edge-Rewriting 2";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 5, δ = 25.7°, Axiom = F <br> F -> F[+F]F[-F]F";
 		}
@@ -550,12 +607,12 @@
 			}
 			var startPos = new THREE.Vector3(0, -40, 0);
 			console.log(next);
-			drawer(next, angle, step, startPos, purple, purple);
+			drawer(next, angle, step, startPos, purple, purple, false, 0);
 			document.getElementById("treename").innerHTML = "Shown: Bracketed Node-Rewriting 2";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 7, δ = 25.7°, Axiom = X <br> X -> F[+X][-X]FX <br> F -> FF";
 		}
 
-		function flower(step) {
+		function flower(step, is3) {
 			clear();
 			start = "P";
 			n = 5;
@@ -571,13 +628,13 @@
 					} else if (previous[i] === "S") {
 						next += "SFS";
 					} else if (previous[i] === "L") {
-						next += "['{f+f-ff-f+|+f-ff-f}]";
+						next += "[{gf+f-ff-f+|+f-ff-f}]";
 					} else if (previous[i] === "K") {
-						next += "[&&&R'/W////W////W////W////W]";
+						next += "[&&&R/W////W////W////W////W]";
 					} else if (previous[i] === "R") {
 						next += "FF";
 					} else if (previous[i] === "W") {
-						next += "[‘∧F][{&&&&−f+f|−f+f}]";
+						next += "[∧F][{p&&&&−ff+ff|−ff+ff}]";
 					} else {
 						next += previous[i];
 					}
@@ -587,7 +644,7 @@
 			}
 			var startPos = new THREE.Vector3(0, -40, 0);
 			console.log(next);
-			drawer(next, angle, step, startPos, green, purple);
+			drawer(next, angle, step, startPos, green, purple, is3, 0.15);
 			document.getElementById("treename").innerHTML = "Current Tree: 'Flower'";
 			document.getElementById("currentTreeInfo").innerHTML = "n = 5, δ = 18°, Axiom = P <br> P -> Q+[P+K]--//[--L]Q[++L]-[PK]++PK <br> Q -> FS[//&&L][//∧∧L]FS <br> S -> SFS <br> L -> [’{+f−ff−f+|+f−ff−f}] <br> K -> [&&&R'/W////W////W////W////W] <br> R -> FF <br> W -> [‘∧F][{&&&&−f+f|−f+f}]";
 		}
