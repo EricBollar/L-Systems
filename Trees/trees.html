@@ -630,11 +630,11 @@
 					} else if (previous[i] === "L") {
 						next += "[{gf+f-ff-f+|+f-ff-f}]";
 					} else if (previous[i] === "K") {
-						next += "[&&&R/W////W////W////W////W]";
+						next += "[&&&R'/W////W////W////W////W]";
 					} else if (previous[i] === "R") {
 						next += "FF";
 					} else if (previous[i] === "W") {
-						next += "[∧F][{p&&&&−ff+ff|−ff+ff}]";
+						next += "['∧F][{p&&&&−ff+ff|−ff+ff}]";
 					} else {
 						next += previous[i];
 					}
@@ -646,7 +646,7 @@
 			console.log(next);
 			drawer(next, angle, step, startPos, green, purple, is3, 0.15);
 			document.getElementById("treename").innerHTML = "Current Tree: 'Flower'";
-			document.getElementById("currentTreeInfo").innerHTML = "n = 5, δ = 18°, Axiom = P <br> P -> Q+[P+K]--//[--L]Q[++L]-[PK]++PK <br> Q -> FS[//&&L][//∧∧L]FS <br> S -> SFS <br> L -> [’{+f−ff−f+|+f−ff−f}] <br> K -> [&&&R'/W////W////W////W////W] <br> R -> FF <br> W -> [‘∧F][{&&&&−f+f|−f+f}]";
+			document.getElementById("currentTreeInfo").innerHTML = "n = 5, δ = 18°, Axiom = P <br> P -> Q+[P+K]--//[--L]Q[++L]-[PK]++PK <br> Q -> FS[//&&L][//∧∧L]FS <br> S -> SFS <br> L -> [{f+f-ff-f+|+f-ff-f}] <br> K -> [&&&R'/W////W////W////W////W] <br> R -> FF <br> W -> ['∧F][{&&&&−ff+ff|−ff+ff}]";
 		}
 
 		function render() {
